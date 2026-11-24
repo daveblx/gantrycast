@@ -32,6 +32,9 @@ npm run dev
 
 This project was developed using AI-assisted workflows.
 
+Note: Old version of this project was made private, after major overhaul. 
+(Initial work on this began in April 2026 under KubeCast, since then the scope of the project changed)
+
 ## License
 
 See [LICENSE](LICENSE).
