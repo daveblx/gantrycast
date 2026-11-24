@@ -1,0 +1,12 @@
+node_modules/
+build/
+release/
+dist/
+out/
+coverage/
+.DS_Store
+*.log
+.env*
+db.json
+.husky
+CHANGELOG.md

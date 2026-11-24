@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Typecheck, build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: |
+          # npm test runs `tsx --test src/**/*.test.ts`. On a checkout with no
+          # test files the glob does not expand and the command exits non-zero,
+          # so skip only when there is genuinely nothing to run. A real test
+          # failure still fails the step.
+          count="$(find src -type f -name '*.test.ts' | wc -l | tr -d ' ')"
+          if [ "${count}" -eq 0 ]; then
+            echo "No test files matched src/**/*.test.ts; skipping npm test."
+            exit 0
+          fi
+          echo "Running ${count} test file(s)."
+          npm test
